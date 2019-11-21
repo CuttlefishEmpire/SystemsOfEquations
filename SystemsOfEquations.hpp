@@ -8,8 +8,11 @@ using namespace std;
 
 class SystemsOfEquations{
 public:
-	SystemsOfEquations(int);
+	SystemsOfEquations();
+	void parseEquations();
 private:
 	vector<vector<string>> equations;
+	vector<string> eqsUnparsed;
 	int numOfEqs;
+	fstream debug;
 };
