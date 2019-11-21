@@ -10,4 +10,5 @@ using namespace std;
 int main(){
     SystemsOfEquations* sys = new SystemsOfEquations();
     sys->parseEquations();
+    //cout << "test" << endl;
 }
