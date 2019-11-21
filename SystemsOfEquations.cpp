@@ -1,4 +1,5 @@
 #include "SystemsOfEquations.hpp"
+#include "CalcFiles/CalcRunner.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -57,6 +58,7 @@ void SystemsOfEquations::help(){
     string s = "";
     cin >> s;
     if(s=="s"){
-        cout << "Supported functions: +\n-\n*\n/\nsin\ncos\ntan\narcsin\narccos\narctan\n" << endl;
+        cout << "Supported functions: +\n-\n*\n/\n^\nlog\nln\nsin\ncos\ntan\narcsin\narccos\narctan\n" << endl;
+        cout << "csc\nsec\ncot\narccsc\narcsec\narccot\nsinh\ncosh\ntanh\ncsch\nsech\ncoth\n" << endl;
     }
 }
