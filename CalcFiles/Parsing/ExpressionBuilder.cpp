@@ -12,7 +12,7 @@ Expression * tokenToExpression(Token & token)
     switch (token.tokenType)
     {
         case TokenType::Literal:
-            return new Expression(parseValue(token));
+            return new Expression(token.value);
         default:
             return new Expression(token.function);
     }

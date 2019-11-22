@@ -5,23 +5,31 @@
 
 using namespace std;
 
-double getAnswer(string input)
+double getAnswer(string & input, CalculatorContext & context)
 {
-	Expression expression = buildExpressionFromPostfix(infixToPostfix(parse(input)));
-	return evaluate(expression);
+    Expression expression = buildExpressionFromPostfix(infixToPostfix(parse(input)));
+    double answer = evaluate(expression, context);
+    context.setValue("ans", answer);
+    return answer;
 }
 
-int mainCalc()
+int main(int, char**)
 {
-	while(true)
-	{
-		string input;
-		cout << "Enter an expression to evaluate:" << endl;
-		getline(cin, input);
-		if(input == "quit")
-		{
-			break;
-		}
-		std::cout << getAnswer(input) << endl;
-	}
+    CalculatorContext context = CalculatorContext();
+    while (true)
+    {
+        string input;
+        cout << "Enter an expression to evaluate:" << endl;
+        getline(cin, input);
+        if (input == "clear")
+        {
+            std::cout << "\x1B[2J\x1B[H";
+            continue;
+        }
+        else if (input == "quit")
+        {
+            break;
+        }
+        std::cout << getAnswer(input, context) << endl;
+    }
 }

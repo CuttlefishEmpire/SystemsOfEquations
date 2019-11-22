@@ -1,10 +1,8 @@
 #pragma once
 
 #include "Expression.hpp"
+#include "../Context/CalculatorContext.hpp"
 
-typedef double (* Evaluator) (Expression & toEvaluate);
+typedef double (* Evaluator) (Expression & toEvaluate, CalculatorContext & context);
 
-double evaluate(Expression & expression);
-
-/* Returns an Evaluator built from a specific operator or function's properties */
-Evaluator buildEvaluator(Function func);
+double evaluate(Expression & expression, CalculatorContext & context);
