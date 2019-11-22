@@ -10,7 +10,7 @@ Expression::Expression(Function function)
     this->function = function;
 }
 
-Expression::Expression(double value)
+Expression::Expression(std::string value)
 {
     this->function = Function::Identity;
     this->value = value;

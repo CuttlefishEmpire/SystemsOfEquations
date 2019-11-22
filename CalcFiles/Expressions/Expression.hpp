@@ -2,15 +2,16 @@
 
 #include "../Functions/Function.hpp"
 #include <vector>
+#include <string>
 
 class Expression
 {
     public:
         Function function;
-        double value;
+        std::string value;
         std::vector<Expression *> arguments;
 
         Expression();
         Expression(Function function);
-        Expression(double value);
+        Expression(std::string value);
 };

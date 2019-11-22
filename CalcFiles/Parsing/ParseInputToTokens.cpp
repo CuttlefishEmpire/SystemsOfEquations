@@ -14,7 +14,6 @@ deque<string> unparsedInputToStringList(string input)
     while (getline(inputStream, segment, delimiter))
     {
         result.push_back(segment);
-
     }
 
     return result;
@@ -22,17 +21,6 @@ deque<string> unparsedInputToStringList(string input)
 
 TokenType stringToTokenType(string single)
 {
-    switch (single.front())
-    {
-        case '0': case '1': case '2':
-        case '3': case '4': case '5':
-        case '6': case '7': case '8':
-        case '9':
-            return TokenType::Literal;
-        default:
-            break;
-    }
-
     if (single == "(")
     {
         return TokenType::LeftParenthesis;
@@ -41,12 +29,12 @@ TokenType stringToTokenType(string single)
     {
         return TokenType::RightParenthesis;
     }
-    else if (single.front() == '-' && single.length() > 1)
+    else if (stringToFunction(single) != Function::Identity)
     {
-        return TokenType::Literal;
+        return TokenType::Function;
     }
 
-    return TokenType::Function;
+    return TokenType::Literal;
 }
 
 Token tokenizeSingle(string single)
@@ -56,11 +44,34 @@ Token tokenizeSingle(string single)
     return Token(single, tokenType, function);
 }
 
+string fixNegative(deque<string> & stringList, int index, string single)
+{
+    if (single != "-")
+    {
+        return single;
+    }
+    if (index == 0)
+    {
+        return "&-";
+    }
+    else if ( stringList.at(index - 1) == "("
+        || stringToFunction(stringList.at(index - 1)) == Function::Add
+        || stringToFunction(stringList.at(index - 1)) == Function::Divide
+        || stringToFunction(stringList.at(index - 1)) == Function::Modulus
+        || stringToFunction(stringList.at(index - 1)) == Function::Multiply
+        || stringToFunction(stringList.at(index - 1)) == Function::Subtract)
+    {
+        return "&-";
+    }
+    return single;
+}
+
 deque<Token> stringListToInfixTokenList(deque<string> stringList)
 {
     deque<Token> result;
-    for (string single : stringList)
+    for (int i = 0; i < stringList.size(); i++)
     {
+        string single = fixNegative(stringList, i, stringList.at(i));
         result.push_back(tokenizeSingle(single));
     }
     return result;

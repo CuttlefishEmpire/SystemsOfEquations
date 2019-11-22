@@ -15,7 +15,8 @@ public:
 private:
 	vector<vector<string>> equations;
 	vector<string> eqsUnparsed;
-	vector<string> varsUsed;
+	vector<vector<string>> singEqUnparsed;
+	vector<char> varsUsed;
 	int numOfEqs;
 	fstream debug;
 };
