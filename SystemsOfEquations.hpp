@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "CalcFiles/CalcRunner.hpp"
+#include "CalcFiles/mainCalc.hpp"
 
 using namespace std;
 
