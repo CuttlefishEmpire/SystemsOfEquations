@@ -24,6 +24,7 @@ SystemsOfEquations::SystemsOfEquations(){
     this->eqsUnparsed = {};
     this->singEqUnparsed = {};
     this->varsUsed = {};
+    this->mat = {};
     for(int i = 0; i < inp; i++){
         equations.push_back({""});
     }
@@ -46,6 +47,12 @@ SystemsOfEquations::SystemsOfEquations(){
     		singEqUnparsed.push_back({});
     	}
     }
+    for(int i = 0; i < varsUsed.size(); i++){
+    	mat.push_back({});
+    }
+    for(int i = 0; i < varsUsed.size(); i++){
+    	mat.at(i).push_back({});
+    }
     debug << "Empty unparsed equations vector created with size " << eqsUnparsed.size() << "." << endl;
     debug << "Iterating through and displaying unparsed equations." << endl;
     for(unsigned int i = 0; i < eqsUnparsed.size(); i++){
@@ -55,15 +62,17 @@ SystemsOfEquations::SystemsOfEquations(){
 }
 
 void SystemsOfEquations::parseEquations(){
+	mainCalc* parse = new mainCalc();
     debug << "\nParsing equations.\n" << endl;
     debug << "Iterating through unparsed equations vector." << endl;
+    int eqOn = 0;
     for(string str:eqsUnparsed){
         debug << "\nUnparsed equation being processed: " << str <<"\n"<< endl;
         string toAdd = "";
         debug << "Searching for negative signs." << endl;
         for(int i = 0; i < str.size(); i++){
         	if(str.at(i)!=' '){
-        		if(str.at(i)=='-'&&i!=0){
+        		if(str.at(i)=='-'&&i!=0&&str.at(i-2)!='='){
         			toAdd+="+-";
                     debug << "Found negative sign at index " << i << ", replacing with +-." << endl;
         		}else{
@@ -77,7 +86,7 @@ void SystemsOfEquations::parseEquations(){
         	for(int j = 0; j < varsUsed.size(); j++){
         		if(toAdd.at(i)==varsUsed.at(j)){
                     debug << "Variable " << toAdd.at(i) << " found at index " << i << "." << endl;
-        			if((i!=0)&&((toAdd.at(i-1)=='+'&&toAdd.at(i)!='-')||toAdd.at(i-1)=='-')){
+        			if((i!=0)&&((toAdd.at(i-1)=='+'&&toAdd.at(i)!='-')||toAdd.at(i-1)=='-')||toAdd.at(i-1)=='='){
         				toAdd.insert(i,"1");
                         i++;
                         debug << "Variable was found to be coefficient-less, so 1 has been supplied." << endl;
@@ -89,36 +98,84 @@ void SystemsOfEquations::parseEquations(){
         int eqInd = 0;
         debug << "\nSearching for equals sign." << endl;
         for(int i = 0; i < toAdd.size(); i++){
-        	if(toAdd.at(i)=='='){
-        		eqInd = i;
+           	if(toAdd.at(i)=='='){
+          		eqInd = i;
                 debug << "Equals sign found at index " << i << "." << endl;
+           	}
+        }
+        string preEq = "";
+        string postEq = "";
+        for(int i = 0; i < eqInd; i++){
+        	preEq+=toAdd.at(i);
+        }
+        debug << "Pre-equals sign equation: " << preEq << endl;
+        for(int i = eqInd+1; i < toAdd.size(); i++){
+        	postEq+=toAdd.at(i);
+        }
+        debug << "Post-equals sign equation: " << postEq << endl;
+    	vector<string> stuffToAdd = {};
+    	int sinceLastVar = 1;
+    	int stored = 0;
+        double ans = parse->returnAns(postEq);
+        debug << "Making vector for coefficients." << endl;
+        for(int i = 0; i < preEq.size(); i++){
+        	for(int j = 0; j < varsUsed.size(); j++){
+        		if(preEq.at(i)==varsUsed.at(j)){
+        			debug << "Variable " << varsUsed.at(j) << " found at index " << i << "." << endl;
+        			for(int k = stored; k < sinceLastVar; k++){
+        				if(preEq.at(k)!='+'){
+        					singEqUnparsed.at(j).push_back(preEq.at(k));
+        					debug << "Character " << preEq.at(k) << " pushed to back of equation for variable " << varsUsed.at(j) << "." << endl;
+        				}
+        			}
+        			stored = sinceLastVar;
+        		}
+        	}
+        	sinceLastVar++;
+        }
+        debug << "Exited variable splitter." << endl;
+        for(int i = 0; i < numOfEqs; i++){
+        	debug << "Statement for variable " << varsUsed.at(i) << ": ";
+        	for(int j = 0; j < singEqUnparsed.at(i).size(); j++){
+        		debug << singEqUnparsed.at(i).at(j);
+        		//mat.at(i).at(j).push_back(singEqUnparsed.at(i).at(j));
+        	}
+        	debug << endl;
+        }
+        vector<string> eqs = {};
+        for(int i = 0; i < numOfEqs; i++){
+        	eqs.push_back("");
+        }
+        debug << "Pre singEqUnparsed for loop" << endl;
+        for(int i = 0; i < singEqUnparsed.size(); i++){
+        	for(int j = 0; j < singEqUnparsed.at(i).size(); j++){
+        		eqs.at(i)+=singEqUnparsed.at(i).at(j);
         	}
         }
-        debug << "\nSearching for variable terms after the equals sign." << endl;
-        int lengthSinceLastVar = 0;
-        for(int i = eqInd; i < toAdd.size(); i++){
-            for(int j = 0; j < varsUsed.size(); j++){
-                if(toAdd.at(i)==varsUsed.at(j)){
-                    debug << "Variable " << toAdd.at(i) << "found at index " << i << "." << endl;
-                    if(i-lengthSinceLastVar!=eqInd){
-                        if(toAdd.at(i-lengthSinceLastVar)=='-'){
-                            toAdd.at(i-lengthSinceLastVar) = '+';
-                        }
-                    }else{
-                        if(toAdd.at(i-lengthSinceLastVar)=='-'){
-                            toAdd.erase(i-lengthSinceLastVar,i-lengthSinceLastVar+1);
-                        }
-                    }
-                }
-            }
-            lengthSinceLastVar++;
+        debug << "Pre eqs for loop" << endl;
+        debug << "eqs size: " << eqs.size() << endl;
+        for(int i = 0; i < eqs.size(); i++){
+        	mat.at(i).at(eqOn) = eqs.at(i);
         }
+        debug << "Current matrix: " << endl;
+        for(int i = 0; i < mat.size(); i++){
+        	for(int j = 0; j < mat.at(i).size(); j++){
+        		debug << mat.at(i).at(j) << " ";
+        	}
+        	debug << endl;
+        }
+        singEqUnparsed = {};
+        for(int i = 0; i < numOfEqs; i++){
+        	singEqUnparsed.push_back({});
+        }
+        eqOn++;
     }
 }
 
 void SystemsOfEquations::help(){
     cout << "This program does not support exponents on its variables; namely, no tying \"x^2,\" though \"2^2\" is fine." << endl;
     cout << "It does, however, support functions (sin, cos, etc)., but not derivatives." << endl;
+    cout << "When entering equations, please ensure that there is only one instance of each variable, where all variable terms are on the left and all constant on the right." << endl;
     cout << "For a full list of supported operations, please enter 's.'" << endl;
     string s = "";
     cin >> s;
