@@ -1,5 +1,4 @@
 #include "SystemsOfEquations.hpp"
-#include "CalcFiles/mainCalc.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -25,6 +24,8 @@ SystemsOfEquations::SystemsOfEquations(){
     this->singEqUnparsed = {};
     this->varsUsed = {};
     this->mat = {};
+    this->matNum = {};
+    this->parse = new mainCalc();
     for(int i = 0; i < inp; i++){
         equations.push_back({""});
     }
@@ -47,12 +48,17 @@ SystemsOfEquations::SystemsOfEquations(){
     		singEqUnparsed.push_back({});
     	}
     }
-    for(int i = 0; i < varsUsed.size(); i++){
+    for(int i = 0; i < numOfEqs; i++){
     	mat.push_back({});
+        matNum.push_back({});
     }
-    for(int i = 0; i < varsUsed.size(); i++){
-    	mat.at(i).push_back({});
+    for(int i = 0; i < numOfEqs; i++){
+        for(int j = 0; j < numOfEqs; j++){
+    	    mat.at(i).push_back({});
+            matNum.at(i).push_back({});
+        }
     }
+    debug << "Matrix dimensions: " << mat.size() << "x" << mat.at(0).size() << endl;
     debug << "Empty unparsed equations vector created with size " << eqsUnparsed.size() << "." << endl;
     debug << "Iterating through and displaying unparsed equations." << endl;
     for(unsigned int i = 0; i < eqsUnparsed.size(); i++){
@@ -62,7 +68,6 @@ SystemsOfEquations::SystemsOfEquations(){
 }
 
 void SystemsOfEquations::parseEquations(){
-	mainCalc* parse = new mainCalc();
     debug << "\nParsing equations.\n" << endl;
     debug << "Iterating through unparsed equations vector." << endl;
     int eqOn = 0;
@@ -86,11 +91,19 @@ void SystemsOfEquations::parseEquations(){
         	for(int j = 0; j < varsUsed.size(); j++){
         		if(toAdd.at(i)==varsUsed.at(j)){
                     debug << "Variable " << toAdd.at(i) << " found at index " << i << "." << endl;
-        			if((i!=0)&&((toAdd.at(i-1)=='+'&&toAdd.at(i)!='-')||toAdd.at(i-1)=='-')||toAdd.at(i-1)=='='){
+                    if(i==0){
+                        debug << "Entered i is zero if statement." << endl;
+                        toAdd.insert(i,"1");
+                        i++;
+                        debug << "Variable was found to be coefficient-less, so 1 has been supplied." << endl;
+                    }else if((i!=0)&&((toAdd.at(i-1)=='+'&&toAdd.at(i)!='-')||toAdd.at(i-1)=='-')||toAdd.at(i-1)=='='){
+                        debug << "Entered i is not zero if statement." << endl;
         				toAdd.insert(i,"1");
                         i++;
                         debug << "Variable was found to be coefficient-less, so 1 has been supplied." << endl;
-        			}
+        			}else{
+                        debug << "Has coefficient, and so nothing shall be done." << endl;
+                    }
         		}
         	}
         }
@@ -154,22 +167,34 @@ void SystemsOfEquations::parseEquations(){
         }
         debug << "Pre eqs for loop" << endl;
         debug << "eqs size: " << eqs.size() << endl;
+        debug << "Matrix dimensions: " << mat.size() << "x" << mat.at(0).size() << endl;
         for(int i = 0; i < eqs.size(); i++){
-        	mat.at(i).at(eqOn) = eqs.at(i);
+        	mat.at(eqOn).at(i) = eqs.at(i);
         }
         debug << "Current matrix: " << endl;
-        for(int i = 0; i < mat.size(); i++){
-        	for(int j = 0; j < mat.at(i).size(); j++){
-        		debug << mat.at(i).at(j) << " ";
-        	}
-        	debug << endl;
-        }
+        printMatrix(mat);
         singEqUnparsed = {};
         for(int i = 0; i < numOfEqs; i++){
         	singEqUnparsed.push_back({});
         }
         eqOn++;
     }
+    debug << "Removing variables from matrix." << endl;
+    for(int i = 0; i < mat.size(); i++){
+        for(int j = 0; j < mat.at(i).size(); j++){
+            mat.at(i).at(j) = mat.at(i).at(j).substr(0, mat.at(i).at(j).size()-1);
+        }
+    }
+    debug << "Matrix without variables: " << endl;
+    printMatrix(mat);
+    debug << "Converting string matrix into a double matrix." << endl;
+    for(int i = 0; i < matNum.size(); i++){
+        for(int j = 0; j < matNum.at(i).size(); j++){
+            matNum.at(i).at(j) = parse->returnAns(mat.at(i).at(j));
+        }
+    }
+    debug << "Matrix converted into doubles: " << endl;
+    printMatrix(matNum);
 }
 
 void SystemsOfEquations::help(){
@@ -182,5 +207,23 @@ void SystemsOfEquations::help(){
     if(s=="s"){
         cout << "Supported functions: \n+\n-\n*\n/\n^\nlog\nln\nsin\ncos\ntan\narcsin\narccos\narctan" << endl;
         cout << "csc\nsec\ncot\narccsc\narcsec\narccot\nsinh\ncosh\ntanh\ncsch\nsech\ncoth\n" << endl;
+    }
+}
+
+void SystemsOfEquations::printMatrix(vector<vector<string>> m){
+    for(int i = 0; i < m.size(); i++){
+       	for(int j = 0; j < m.at(i).size(); j++){
+       		debug << m.at(i).at(j) << " ";
+       	}
+       	debug << endl;
+    }
+}
+
+void SystemsOfEquations::printMatrix(vector<vector<double>> m){
+    for(int i = 0; i < m.size(); i++){
+       	for(int j = 0; j < m.at(i).size(); j++){
+       		debug << m.at(i).at(j) << " ";
+       	}
+       	debug << endl;
     }
 }

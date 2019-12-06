@@ -8,6 +8,13 @@
 using namespace std;
 
 int main(){
-    SystemsOfEquations* sys = new SystemsOfEquations();
-    //sys->parseEquations();
+    while(true){
+        SystemsOfEquations* sys = new SystemsOfEquations();
+        cout << "If you would like to exit, please type 'exit.' Otherwise, type something else." << endl;
+        string ex = "";
+        cin >> ex;
+        if(ex=="exit"){
+            break;
+        }
+    }
 }
