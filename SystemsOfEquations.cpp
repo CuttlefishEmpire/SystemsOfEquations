@@ -342,7 +342,7 @@ void SystemsOfEquations::help(){
     string s = "";
     cin >> s;
     if(s=="s"){
-        cout << "Supported functions: \n+\n-\n*\n/\n^\nlog\nlen\nsin\ncos\ntan\narcsin\narccos\narctan" << endl;
+        cout << "Supported functions: \n+\n-\n*\n/\n^\nlog\nln\nsin\ncos\ntan\narcsin\narccos\narctan" << endl;
         cout << "csc\nsec\ncot\narccsc\narcsec\narccot\nsinh\ncosh\ntanh\ncsch\nsech\ncoth\n" << endl;
     }
 }
