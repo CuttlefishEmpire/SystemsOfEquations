@@ -337,7 +337,8 @@ void SystemsOfEquations::help(){
     cout << "This program does not support exponents on its variables; namely, no tying \"x^2,\" though \"2^2\" is fine." << endl;
     cout << "It does, however, support functions (sin, cos, etc)., but not derivatives." << endl;
     cout << "Variables may only be one character in length." << endl;
-    cout << "When entering equations, please ensure that there is only one instance of each variable, where all variable terms are on the left and all constant on the right." << endl;
+    cout << "When entering equations, please ensure that there is only one instance of each variable, where all variable terms are on the left and all constants are on the right." << endl;
+    cout << "Please ensure that all terms have spaces between them (i.e., 2x + y = 3 instead of 2x+y=3)." << endl;
     cout << "For a full list of supported operations, please enter 's.'" << endl;
     string s = "";
     cin >> s;
